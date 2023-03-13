@@ -1,0 +1,20 @@
+{
+    "name": "zaki/pr",
+    "description": "project for upwork",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Zaki\\Pr\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ZakariaBenhirt89",
+            "email": "zakaria.benhirt@outlook.fr"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "phpunit/phpunit": "^10.0"
+    }
+}
