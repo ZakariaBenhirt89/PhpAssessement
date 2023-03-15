@@ -15,67 +15,63 @@ class MyClass
         }
     }
     function assemble_segments($fragments) {
-      $segments = array();
+      $segments = [];
       $depth = '';
+      
       foreach ($fragments as $fragment) {
-      print_r("executed\n");  
-      $size = strlen($fragment);
-      if ($size < 8) {
-        continue;
-      }
-      // check the dept if thereis any one there
-      // by the way by construction dept is laways less then 128 of we need to increment
-      if(!empty($depth)){
-       $depthLength = strlen($depth);
-       print_r("the depth length ".$depthLength."\n");
-       // the size of how wen need to substring the fragement 
-       $shouldGetFromFragement = 256 - $depthLength;
-       if(strlen($fragment) > $shouldGetFromFragement){
-        $sub = substr($fragment , 0 , $shouldGetFromFragement);
-        $rest = substr($fragment  , $shouldGetFromFragement);
-        $fragment = $rest;
-        print_r("push dept\n");  
-        print_r($depth.$sub."\n");
-        array_push($segments , $depth.$sub);
-        $depth = '';
-       }
-       
-      }
-      if($this->haveRequirement($fragment)){
-        print_r("push normal\n");  
-        array_push($segments , $fragment);
-      }else{
-       if(strlen($fragment) < 128){
-        print_r("dept\n");  
-        $depth = $depth.$fragment;
-       }
-       if(strlen($fragment) > 256){
-        $chuncks = str_split($fragment , 256);
-        // check the last element in the chuncks
-        $last = end($chuncks);
-        if($this->haveRequirement($last)){
-            print_r("push normal 2\n");  
-            foreach ($chuncks as $chunk) {
-                array_push($segments, $chunk);
-            }
-        }else{
-            print_r("push normal 3\n");  
-            $depth = array_pop($chuncks);
-            foreach ($chuncks as $chunk) {
-                array_push($segments, $chunk);
-            }
-        }
-       }
+          if (strlen($fragment) < 8) {
+              continue;
+          }
+          
+          // Check if there is any depth
+          // By construction, depth is always less than 128, so we need to increment
+          if (!empty($depth)) {
+              $depthLength = strlen($depth);
+              $shouldGetFromFragment = 256 - $depthLength;
+              
+              if (strlen($fragment) > $shouldGetFromFragment) {
+                  $sub = substr($fragment, 0, $shouldGetFromFragment);
+                  $rest = substr($fragment, $shouldGetFromFragment);
+                  $fragment = $rest;
+                  
+                  array_push($segments, $depth . $sub);
+                  $depth = '';
+              }
+          }
+          
+          if ($this->haveRequirement($fragment)) {
+              array_push($segments, $fragment);
+          } else {
+              if (strlen($fragment) < 128) {
+                  $depth .= $fragment;
+              }
+              
+              if (strlen($fragment) > 256) {
+                  $chunks = str_split($fragment, 256);
+                  
+                  // Check the last element in the chunks
+                  $last = end($chunks);
+                  
+                  if ($this->haveRequirement($last)) {
+                      foreach ($chunks as $chunk) {
+                          array_push($segments, $chunk);
+                      }
+                  } else {
+                      $depth = array_pop($chunks);
+                      
+                      foreach ($chunks as $chunk) {
+                          array_push($segments, $chunk);
+                      }
+                  }
+              }
+          }
       }
       
-
-
-}
-if(!empty($depth)){
-  array_push($segments, $depth);
-}
-
-return $segments; 
+      if (!empty($depth)) {
+          array_push($segments, $depth);
+      }
+      
+      return $segments;
     }
     function trimTo128to256($string) {
         $stringArray = array();
